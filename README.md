@@ -8,4 +8,22 @@ medRxiv
 
 ### Healthy
 
+Box-Cox Cole Green
+
+### Diseased
+
+Box-Cox Cole Green
+
+Box-Cox Power Exponential
+
+Normal
+
 ## Code
+
+main.Rmd
+
+functions.R
+
+data.R
+
+models.R
