@@ -20,7 +20,7 @@ Normal
 
 ## Code
 
-main.Rmd
+[main.Rmd](main.Rmd)
 
 functions.R
 
