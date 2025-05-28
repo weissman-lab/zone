@@ -22,8 +22,8 @@ Normal
 
 [main.Rmd](main.Rmd)
 
-functions.R
+[functions.R](functions.R)
 
-data.R
+[data.R](data.R)
 
 [models.R](models.R)
