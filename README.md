@@ -8,7 +8,7 @@ medRxiv
 
 ### Healthy
 
-Box-Cox Cole Green
+[Box-Cox Cole Green](model_healthy.RDS)
 
 ### Diseased
 
