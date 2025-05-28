@@ -16,7 +16,7 @@ Box-Cox Cole Green
 
 Box-Cox Power Exponential
 
-Normal
+[Normal](model_no.RDS)
 
 ## Code
 
