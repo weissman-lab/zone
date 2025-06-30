@@ -1,19 +1,41 @@
 # Expectation maximization algorithm
 em <- function (values, model_healthy, model_type) {
   
-  runs <- 100
+  runs <- 10
   
   for(i in 1:runs) {
+    
+    cat ("Run", i, "of", runs, "\n")
+    
+    # If a model cannot be found to fit the initial random set of probabilities,
+    # search for other random sets of probabilities until one can be found
+    
+    while (TRUE) {
   
-    # Get initial set of probabilities using the healthy model and a random
-    # version of the diseased model
-    probabilities <- get_initial_probabilities (values, model_healthy, model_type)
+      # Get initial set of probabilities using the healthy model and a random
+      # version of the diseased model
+      probabilities <- get_initial_probabilities (values, model_healthy, model_type)
+    
+      # Calculate priors for the healthy and diseased models from the initial
+      # set of probabilities      
+      priors <- get_priors (probabilities)
+      
+      # Fit the diseased model using the observed FEV1/FVC values and the initial
+      # set of probabilities
+      model_diseased <- get_model (values, probabilities [2,], model_type)
+     
+      # If there was no error in fitting the model, then break out of this loop
+      if (!inherits (model_diseased, "try-error")) break
+      
+    }
     
     difference <- 1
     
     iterations <- 1
     
-    while (difference > 0.1 && iterations <= 1000) {
+    while (difference > 0.1 && iterations <= 100) {
+      
+      cat ("Iteration", iterations, "\n")
       
       #### M step in the EM algorithm ####
 
@@ -113,7 +135,7 @@ get_initial_probabilities <- function (values, model_healthy, type) {
   
   sums <- array (NA, dim = n)
   
-  prior_healthy <- runif (1, 0.3, 1.0)
+  prior_healthy <- runif (1, 0.7, 1.0)
   prior_diseased <- 1 - prior_healthy
   
   if (type == "bccg") {
@@ -254,40 +276,56 @@ get_model <- function (values, weights, type) {
   
   if (type == "bccg") {
     
-    model <- gamlss (
-      values ~ 1,
-      mu.start = 0.5,
-      family = BCCGo,
-      weights = weights,
-      data = data,
-      trace = FALSE
-    )    
-    
+    model <- try (
+      
+      gamlss (
+        values ~ 1,
+        mu.start = 0.5,
+        family = BCCGo,
+        method = RS (100),
+        weights = weights,
+        data = data,
+        trace = FALSE,
+      ), silent = TRUE
+      
+    )
+      
   }
   
   if (type == "bcpe") {
     
-    model <- gamlss (
-      values ~ 1,
-      mu.start = 0.5,
-      family = BCPEo,
-      weights = weights,
-      data = data,
-      trace = FALSE      
+    model <- try (
+      
+      gamlss (
+        values ~ 1,
+        mu.start = 0.5,
+        family = BCPEo,
+        method = RS (100),
+        weights = weights,
+        data = data,
+        trace = FALSE
+      ), silent = TRUE
+      
     )
     
   }
-  
+    
   if (type == "no") {
     
-    model <- gamlss (
-      values ~ 1,
-      family = NO,
-      weights = weights,
-      data = data,
-      trace = FALSE
-    )    
-    
+    model <- try (
+      
+      gamlss (
+        values ~ 1,
+        family = NO,
+        method = RS (100),
+        mu.start = 0.5,
+        weights = weights,
+        data = data,
+        trace = FALSE
+      ), silent = TRUE
+      
+    )
+
   }
 
   return (model)

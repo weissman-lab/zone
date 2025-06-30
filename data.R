@@ -329,7 +329,9 @@ nhanes <- nhanes_2007_2012 %>%
 
 nhanes_healthy <- filter (nhanes, healthy == 1)
 
-#### Get UPHS Data ####
+################################################################################
+#### UPHS ####
+################################################################################
 
 uphs <- rbind (
   read_csv ("../data/2000.csv"),
@@ -360,7 +362,6 @@ uphs <- rbind (
 
 uphs <- uphs %>%
   filter (age > 17) %>%
-  filter (age < 80) %>%
   filter (fev1 > 0) %>%
   filter (fvc > 0) %>%
   filter (height > 0) %>%
@@ -468,23 +469,6 @@ uphs <- uphs %>%
   distinct (mrn, .keep_all = TRUE) %>%
   mutate (height = height * 2.54) %>%
   mutate (fev1_fvc = fev1 / fvc) %>%
-  mutate (asthma = case_when (
-    str_detect (diagnosis, regex ("asthma", ignore_case = TRUE)) == 1 ~ 1,
-    TRUE ~ 0)
-  ) %>%
-  mutate (bronchitis = case_when (
-    str_detect (diagnosis, regex ("chronic bronchitis", ignore_case = TRUE)) == 1 ~ 1,
-    TRUE ~ 0)
-  ) %>%
-  mutate (copd = case_when (
-    str_detect (diagnosis, regex ("chronic obstructive pulmonary", ignore_case = TRUE)) == 1 |
-    str_detect (diagnosis, regex ("copd", ignore_case = TRUE)) ~ 1,
-    TRUE ~ 0)
-  ) %>%
-  mutate (emphysema = case_when (
-    str_detect (diagnosis, regex ("emphysema", ignore_case = TRUE)) == 1 ~ 1,
-    TRUE ~ 0)
-  ) %>%
   rowid_to_column ("id") %>% 
   select (
     id,
@@ -492,10 +476,6 @@ uphs <- uphs %>%
     sex,
     height,
     race,
-    asthma,
-    bronchitis,
-    copd,
-    emphysema,
     fev1,
     fvc,
     fev1_fvc
